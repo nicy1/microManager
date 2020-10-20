@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+option java_package = "com.message.protobuf";
+option java_outer_classname="Messages";
+ 
+message MessageClient {
+	int32 version = 1;
+  	Credentials credentials = 2;
+  	Request request = 3;
+  	map<string, string> policies = 4;
+}
+
+message MessageServer {
+  	int32 type = 1;
+  	Response response = 2;
+  	enum Error{
+  		AUTH = 0;
+  		VERSION = 2;
+  		SERVICE = 3;
+  	}
+  	Error error = 3;
+  	map<string, string> policies = 4;
+}
+
+enum ActionType {
+    START_LIVEMODE = 0;
+    STOP_LIVEMODE = 1;
+    SNAP = 2;
+    CHANGEPOSITION = 3;
+    AUTOFOCUS = 4;
+    EXPOSURE = 5;
+    FOCUS = 6;
+    ROI = 7;
+    GALVO = 8;
+    SLM = 9;
+    UNKNOWN = 10;
+}
+
+message Response{
+	ActionType responseType = 1;
+	bytes image = 2;
+}
+
+message Credentials{
+	string secret = 1;
+}
+
+//If all these are not present, you are clearing the ROI
+message ROIParam{
+	int32 x = 1;
+	int32 y = 2;
+	int32 xSize = 3;
+	int32 ySize = 4;
+}
+
+//For X and Y use param in request. If all the params are null, you are adding a new device
+message GalvoParam{
+	string name = 1;
+	bool illumination = 2;
+	//Time in us
+	double time = 3;
+}
+
+//If image is not present, you are adding a new device
+message SLMParam{
+	string name = 1;
+	bytes image = 2;
+}
+
+message Request{
+  	ActionType requestType = 2;
+  	ROIParam roiParam = 3;
+  	SLMParam slmParam = 4;
+  	GalvoParam galvoParam = 5;
+  	double doubleParam1 = 6;
+  	double doubleParam2 = 7;
+  	bool boolParam = 8;
+}
