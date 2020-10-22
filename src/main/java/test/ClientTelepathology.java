@@ -71,7 +71,8 @@ public class ClientTelepathology {
 	public static ClientTelepathology getInstance() {
 		return single_instance;
 	}
-
+	
+	
 	public boolean connect(String host) {
 
 		SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
@@ -94,28 +95,7 @@ public class ClientTelepathology {
 
 			output = socket.getOutputStream();
 			input = socket.getInputStream();
-
-			return true;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	// My connect without SSL
-	public boolean connect_noSSL(String host) {
-
-		try {
-			socket = new Socket(host, port); 
-	        System.out.println("Connected");
-
-			output = socket.getOutputStream();
-			input = socket.getInputStream();
-		/*	
-			in = new DataInputStream(socket.getInputStream());
-			out    = new DataOutputStream(socket.getOutputStream());
-        */
+			
 			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

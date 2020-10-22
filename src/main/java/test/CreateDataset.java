@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.message.protobuf.Messages.MessageClient;
 
@@ -27,7 +28,7 @@ public class CreateDataset {
 		String line;
 		if(header){
 		   try { 
-			   line = "No.,Time,Source,Destination,Protocol,Length,ActionType";
+			   line = "No.,Timestamp,Source,Destination,Protocol,Length,ActionType";
 			   fw = new FileWriter(new File("telepathology.csv")); 
 			   fw.append(line);
 			   fw.append('\n');
@@ -40,10 +41,12 @@ public class CreateDataset {
 				String no = String.valueOf(counter++);
 				String src = "127.0.0.1";
 				String dst = "127.0.0.1";
-				String nano = String.valueOf(LocalDateTime.now());
+				Date date = new Date();
+				Thread.sleep(500);
+				String millis = String.valueOf(date.getTime());
 				String length = String.valueOf(mc.toString().length()); 
 				String actiontype = String.valueOf(mc.getRequest().getRequestTypeValue());
-				line = no+","+nano+","+src+","+dst+",TCP,"+length+","+actiontype;
+				line = no+","+millis+","+src+","+dst+",TCP,"+length+","+actiontype;
 				
 				fw.append(line);
 				fw.append('\n');

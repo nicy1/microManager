@@ -10,8 +10,8 @@ public class TestTelepathology {
 		ClientTelepathology ct = ClientTelepathology.getInstance();
 		TestRequest req = new TestRequest();
 		try {
-			ct.connect_noSSL("localhost");
-			req.requestType(ct, 3);
+			ct.connect("localhost");
+			req.requestType(ct, 2);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
