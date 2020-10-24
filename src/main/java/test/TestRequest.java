@@ -23,7 +23,7 @@ public class TestRequest {
 			ct.controlAutofocus(false, 0);
 			ct.getImage();
 			ct.setExposure(15);
-			ct.setExposure(15);
+			ct.setExposure(15);	
 			ct.setExposure(15);
 			ct.getImage();
 			ct.controlAutofocus(false, 0);

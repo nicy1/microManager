@@ -24,7 +24,9 @@ import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoField;
+import java.util.Date;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -56,7 +58,6 @@ public class ClientTelepathology {
 	
 	private CreateDataset create_dataset;
 	
-	
 	public ClientTelepathology() {
 		System.setProperty("javax.net.ssl.trustStore", "trustStore");
 	    System.setProperty("javax.net.ssl.trustStorePassword", "micromanager");
@@ -72,11 +73,8 @@ public class ClientTelepathology {
 		return single_instance;
 	}
 	
-	
 	public boolean connect(String host) {
-
 		SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-
 		try {
 
 			socket = ssf.createSocket(host, port);
@@ -107,7 +105,8 @@ public class ClientTelepathology {
 	
 	public byte[] getImage() throws Exception {
 		byte[] image = null;
-		sendPhotoRequest(output);
+		long tReq = System.currentTimeMillis();
+		int reqS = sendPhotoRequest(output);
 
 		MessageServer response = MessageServer.parseDelimitedFrom(input);
 		if(response == null)
@@ -117,6 +116,9 @@ public class ClientTelepathology {
 		switch(response.getType()) {
 		case OK_TYPE:
 			Response rs = response.getResponse();
+			long tResp = System.currentTimeMillis();
+			int respS = response.getSerializedSize();
+			create_dataset.FileWriteLine(false, reqS, reqS/respS, tResp-tReq, rs.getResponseTypeValue());
 			//check if policies
 			Map<String, String> policies = response.getPoliciesMap();
 			if(policies != null && !policies.isEmpty()) {
@@ -187,7 +189,8 @@ public class ClientTelepathology {
 	
 	public byte[] controlAutofocus(boolean enable, int y) throws Exception {
 		byte[] image = null;
-		sendAutoFocusRequest(output, enable, y);
+		long tReq = System.currentTimeMillis();
+		int reqS = sendAutoFocusRequest(output, enable, y);
 
 		MessageServer response = MessageServer.parseDelimitedFrom(input);
 		if(response == null)
@@ -197,12 +200,14 @@ public class ClientTelepathology {
 		switch(response.getType()) {
 			case OK_TYPE:
 				Response rs = response.getResponse();
+				long tResp = System.currentTimeMillis();
+				int respS = response.getSerializedSize();
+				create_dataset.FileWriteLine(false, reqS, reqS/respS, tResp-tReq, rs.getResponseTypeValue());
 				//check if policies
 				Map<String, String> policies = response.getPoliciesMap();
 				if(policies != null && !policies.isEmpty()) {
 					handlePolicies(policies);
 				}
-
 				//
 				if(rs != null && rs.getResponseType()==ActionType.AUTOFOCUS) {
 					System.out.println("Received confirmation");
@@ -223,7 +228,8 @@ public class ClientTelepathology {
 	}
 	
 	public void getVideo() throws Exception {
-		sendVideoRequest(output);
+		long tReq = System.currentTimeMillis();
+		int reqS = sendVideoRequest(output);
 
 		MessageServer response = MessageServer.parseDelimitedFrom(input);
 		if(response == null)
@@ -233,12 +239,14 @@ public class ClientTelepathology {
 		switch(response.getType()) {
 			case OK_TYPE:
 				Response rs = response.getResponse();
+				long tResp = System.currentTimeMillis();
+				int respS = response.getSerializedSize();
+				create_dataset.FileWriteLine(false, reqS, reqS/respS, tResp-tReq, rs.getResponseTypeValue());
 				//check if policies
 				Map<String, String> policies = response.getPoliciesMap();
 				if(policies != null && !policies.isEmpty()) {
 					handlePolicies(policies);
 				}
-
 				//
 				if(rs != null && rs.getResponseType()==ActionType.START_LIVEMODE) {
 					System.out.println("Received confirmation");
@@ -257,8 +265,9 @@ public class ClientTelepathology {
 	}
 	
 	public void stopVideo() throws Exception {
-		sendStopVideo(output);
-
+		long tReq = System.currentTimeMillis();
+		int reqS = sendStopVideo(output);
+        
 		MessageServer response = MessageServer.parseDelimitedFrom(input);
 		if(response == null)
 			System.out.println("Is null");
@@ -267,12 +276,14 @@ public class ClientTelepathology {
 		switch(response.getType()) {
 			case OK_TYPE:
 				Response rs = response.getResponse();
+				long tResp = System.currentTimeMillis();
+				int respS = response.getSerializedSize();
+				create_dataset.FileWriteLine(false, reqS, reqS/respS, tResp-tReq, rs.getResponseTypeValue());
 				//check if policies
 				Map<String, String> policies = response.getPoliciesMap();
 				if(policies != null && !policies.isEmpty()) {
 					handlePolicies(policies);
 				}
-
 				//
 				if(rs != null && rs.getResponseType()==ActionType.STOP_LIVEMODE) {
 					System.out.println("Received confirmation");
@@ -306,7 +317,6 @@ public class ClientTelepathology {
 				if(policies != null && !policies.isEmpty()) {
 					handlePolicies(policies);
 				}
-
 				//
 				if(rs != null && rs.getResponseType()==ActionType.FOCUS) {
 					System.out.println("Received confirmation");
@@ -325,7 +335,8 @@ public class ClientTelepathology {
 	}
 	
 	public void setExposure(int x) throws Exception {
-		sendExposureRequest(output, x);
+		long tReq = System.currentTimeMillis();
+		int reqS = sendExposureRequest(output, x);
 
 		MessageServer response = MessageServer.parseDelimitedFrom(input);
 		if(response == null)
@@ -335,12 +346,14 @@ public class ClientTelepathology {
 		switch(response.getType()) {
 			case OK_TYPE:
 				Response rs = response.getResponse();
+				long tResp = System.currentTimeMillis();
+				int respS = response.getSerializedSize();
+				create_dataset.FileWriteLine(false, reqS, reqS/respS, tResp-tReq, rs.getResponseTypeValue());
 				//check if policies
 				Map<String, String> policies = response.getPoliciesMap();
 				if(policies != null && !policies.isEmpty()) {
 					handlePolicies(policies);
 				}
-
 				//
 				if(rs != null && rs.getResponseType()==ActionType.EXPOSURE) {
 					System.out.println("Received confirmation");
@@ -421,7 +434,7 @@ public class ClientTelepathology {
 				.setSecret(cf.getPluginSecret());
 	}
 
-	private void sendPhotoRequest(OutputStream output) throws IOException, InterruptedException {
+	private int sendPhotoRequest(OutputStream output) throws IOException, InterruptedException {
 		Request request = Request.newBuilder()
 				.setRequestType(ActionType.SNAP)
 				.build();
@@ -431,7 +444,8 @@ public class ClientTelepathology {
 				.setRequest(request)
 				.build();
 		requestMessage.writeDelimitedTo(output);
-		create_dataset.FileWriteLine(requestMessage, false);
+		//create_dataset.FileWriteLine(requestMessage, false);
+		return requestMessage.getRequest().getSerializedSize();
 	}
 	
 	private void sendPositionRequest(OutputStream output, int x, int y) throws IOException {
@@ -448,7 +462,7 @@ public class ClientTelepathology {
 		requestMessage.writeDelimitedTo(output);
 	}
 	
-	private void sendAutoFocusRequest(OutputStream output, boolean enable, int y) throws IOException, InterruptedException {
+	private int sendAutoFocusRequest(OutputStream output, boolean enable, int y) throws IOException, InterruptedException {
 		Request request = Request.newBuilder()				
 				.setRequestType(ActionType.AUTOFOCUS)
 				.setBoolParam(enable)
@@ -460,11 +474,13 @@ public class ClientTelepathology {
 				.setRequest(request)
 				.build();
 		requestMessage.writeDelimitedTo(output);
-		create_dataset.FileWriteLine(requestMessage, false);
+		Thread.holdsLock(input);
+		//create_dataset.FileWriteLine(requestMessage, false);
+		return requestMessage.getRequest().getSerializedSize();
 	}
 
 
-	private void sendVideoRequest(OutputStream output) throws IOException, InterruptedException {
+	private int sendVideoRequest(OutputStream output) throws IOException, InterruptedException {
 		Request request = Request.newBuilder()
 				.setRequestType(ActionType.START_LIVEMODE)
 				.build();
@@ -474,10 +490,11 @@ public class ClientTelepathology {
 				.setRequest(request)
 				.build();
 		requestMessage.writeDelimitedTo(output);
-		create_dataset.FileWriteLine(requestMessage, false);
+		//create_dataset.FileWriteLine(requestMessage, false);
+		return requestMessage.getRequest().getSerializedSize();
 	}
 	
-	private void sendStopVideo(OutputStream output) throws IOException, InterruptedException {
+	private int sendStopVideo(OutputStream output) throws IOException, InterruptedException {
 		Request request = Request.newBuilder()
 				.setRequestType(ActionType.STOP_LIVEMODE)
 				.build();
@@ -487,10 +504,11 @@ public class ClientTelepathology {
 				.setRequest(request)
 				.build();
 		requestMessage.writeDelimitedTo(output);
-		create_dataset.FileWriteLine(requestMessage, false);
+		//create_dataset.FileWriteLine(requestMessage, false);
+		return requestMessage.getRequest().getSerializedSize();
 	}
 	
-	private void sendFocusRequest(OutputStream output, int x) throws IOException, InterruptedException {
+	private int sendFocusRequest(OutputStream output, int x) throws IOException, InterruptedException {
 		Request request = Request.newBuilder()
 				.setRequestType(ActionType.FOCUS)
 				.setDoubleParam1(x)
@@ -501,10 +519,11 @@ public class ClientTelepathology {
 				.setRequest(request)
 				.build();
 		requestMessage.writeDelimitedTo(output);
-		create_dataset.FileWriteLine(requestMessage, false);
+		//create_dataset.FileWriteLine(requestMessage, false);
+		return requestMessage.getRequest().getSerializedSize();
 	}
 	
-	private void sendExposureRequest(OutputStream output, int x) throws IOException, InterruptedException {
+	private int sendExposureRequest(OutputStream output, int x) throws IOException, InterruptedException {
 		Request request = Request.newBuilder()
 				.setRequestType(ActionType.EXPOSURE)
 				.setDoubleParam1(x)
@@ -515,7 +534,8 @@ public class ClientTelepathology {
 				.setRequest(request)
 				.build();
 		requestMessage.writeDelimitedTo(output);
-		create_dataset.FileWriteLine(requestMessage, false);
+		//create_dataset.FileWriteLine(requestMessage, false);
+		return requestMessage.getRequest().getSerializedSize();
 	}
 
 	private void sendConfiguration(OutputStream output, Request request) throws IOException {
